@@ -26,13 +26,27 @@ public class User {
 
     @Override
     public String toString() {
-        return "User [id=" + id + ", username= " + username + ", password=" + password + ", email=" + email;
+        return "Username [id=" + id + ", username=" + username + ", email=" + email;
     }
 
-    @ManyToMany(mappedBy = "users")
+    @ManyToMany
+    @JoinTable(
+            name = "user_role",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+
     private Set<Role> roles = new HashSet<>();
 
-    public int getId() {
+    public void addRole(Role role) {
+        roles.add(role);
+    }
+
+    public void removeRole(Role role) {
+        roles.remove(role);
+    }
+
+    public Integer getId() {
         return id;
     }
 
@@ -42,5 +56,21 @@ public class User {
 
     public String getPassword()  {
         return password;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public boolean IsEnabled() {
+        return isEnabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        isEnabled = enabled;
     }
 }
