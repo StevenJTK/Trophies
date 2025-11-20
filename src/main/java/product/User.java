@@ -1,7 +1,6 @@
 package product;
 
 import jakarta.persistence.*;
-
 import java.util.HashSet;
 import java.util.Set;
 
@@ -11,8 +10,11 @@ public class User {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Integer id;
+
+    @Column(unique = true)
     private String username;
     private String password;
+    @Column(unique = true)
     private String email;
     private boolean isEnabled = false;
 
@@ -26,7 +28,7 @@ public class User {
 
     @Override
     public String toString() {
-        return "Username [id=" + id + ", username=" + username + ", email=" + email;
+        return "Username [id=" + id + ", username=" + username;
     }
 
     @ManyToMany
@@ -66,7 +68,7 @@ public class User {
         this.email = email;
     }
 
-    public boolean IsEnabled() {
+    public boolean isEnabled() {
         return isEnabled;
     }
 

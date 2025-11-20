@@ -1,7 +1,6 @@
 package product;
 
 import jakarta.persistence.*;
-
 import java.util.HashSet;
 import java.util.Set;
 
@@ -18,13 +17,24 @@ public class Role {
 
     public Role() {}
 
-    // add null check for add and remove user
     public void addUser(User user) {
-        users.add(user);
+        if (user == null) {
+            throw new NullPointerException("User cannot be null.");
+        } else {
+            users.add(user);
+        }
     }
 
     public void removeUser(User user) {
-        users.remove(user);
+        if (user == null) {
+            throw new IllegalArgumentException("User cannot be null.");
+        } else {
+            if(users.contains(user)) {
+                users.remove(user);
+            } else {
+                throw new IllegalArgumentException("User is not assigned to this role.");
+            }
+        }
     }
 
     public int getId() {
