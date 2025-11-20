@@ -18,7 +18,7 @@ public class User {
     private String email;
     private boolean isEnabled = false;
 
-    protected User() {}
+    public User() {}
 
     public User(String username, String password, String email) {
         this.username = username;
@@ -39,6 +39,10 @@ public class User {
     )
 
     private Set<Role> roles = new HashSet<>();
+
+    public Set<Role> getRoles() {
+        return roles;
+    }
 
     public void addRole(Role role) {
         if (roles == null) {
