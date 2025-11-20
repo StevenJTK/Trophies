@@ -80,4 +80,17 @@ public class UserService {
 
         return user;
     }
+
+    public Role findRoleByName(String roleName) {
+        Role role;
+
+        if(roleName == null) {
+            throw new IllegalArgumentException("Role name cannot be null.");
+        }
+        role = roleRepository.findByRoleName(roleName);
+        if(role == null) {
+            throw new IllegalArgumentException("This role does not exist.");
+        }
+        return role;
+    }
 }
