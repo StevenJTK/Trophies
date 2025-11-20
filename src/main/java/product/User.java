@@ -44,25 +44,6 @@ public class User {
         return roles;
     }
 
-    public void addRole(Role role) {
-        if (roles == null) {
-            throw new NullPointerException("Role doesn't exist");
-        } else {
-            roles.add(role);
-        }
-    }
-
-    public void removeRole(Role role) {
-        if(role == null) {
-            throw new IllegalArgumentException("Role cannot be null.");
-        }
-        if (roles.contains(role)) {
-            roles.remove(role);
-        } else {
-            throw new IllegalArgumentException("Role does not exist.");
-        }
-    }
-
     public Integer getId() {
         return id;
     }

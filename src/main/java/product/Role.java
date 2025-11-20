@@ -17,25 +17,6 @@ public class Role {
 
     public Role() {}
 
-    public void addUser(User user) {
-        if (user == null) {
-            throw new NullPointerException("User cannot be null.");
-        } else {
-            users.add(user);
-        }
-    }
-
-    public void removeUser(User user) {
-        if (user == null) {
-            throw new IllegalArgumentException("User cannot be null.");
-        } else {
-            if(users.contains(user)) {
-                users.remove(user);
-            } else {
-                throw new IllegalArgumentException("User is not assigned to this role.");
-            }
-        }
-    }
 
     public int getId() {
         return id;
