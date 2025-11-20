@@ -41,11 +41,22 @@ public class User {
     private Set<Role> roles = new HashSet<>();
 
     public void addRole(Role role) {
-        roles.add(role);
+        if (roles == null) {
+            throw new NullPointerException("Role doesn't exist");
+        } else {
+            roles.add(role);
+        }
     }
 
     public void removeRole(Role role) {
-        roles.remove(role);
+        if(role == null) {
+            throw new IllegalArgumentException("Role cannot be null.");
+        }
+        if (roles.contains(role)) {
+            roles.remove(role);
+        } else {
+            throw new IllegalArgumentException("Role does not exist.");
+        }
     }
 
     public Integer getId() {
