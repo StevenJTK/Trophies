@@ -1,5 +1,7 @@
 package product;
 
+import game.Trophies;
+import game.Trophy;
 import jakarta.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
@@ -42,6 +44,19 @@ public class User {
 
     public Set<Role> getRoles() {
         return roles;
+    }
+
+    @ManyToMany
+    @JoinTable(
+            name = "user_trophy",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn (name = "trophy_id")
+    )
+
+    private Set<Trophy> trophies = new HashSet<>();
+
+    public Set<Trophy> getTrophies() {
+        return trophies;
     }
 
     public Integer getId() {

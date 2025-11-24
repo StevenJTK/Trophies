@@ -1,6 +1,7 @@
 package game;
 
 import jakarta.persistence.*;
+import product.User;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -21,6 +22,9 @@ public class Trophy {
     @ManyToOne()
     @JoinColumn(name = "game_id")
     private Game game;
+
+    @ManyToMany(mappedBy = "trophies")
+    private Set<User> user = new HashSet<User>();
 
     public int getId() {
         return id;
