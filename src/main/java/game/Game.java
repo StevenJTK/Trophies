@@ -13,7 +13,7 @@ public class Game {
     private int id;
     @Column(unique = true)
     private String gameName;
-    private String description;
+    private String gameDescription;
     private String genre;
     private String releaseDate;
     private String developer;
@@ -22,7 +22,7 @@ public class Game {
 
     @Override
     public String toString() {
-        return "Game [id=" + id + ", gameName=" + gameName + ", description=" + description + ", genre=" + genre +
+        return "Game [id=" + id + ", gameName=" + gameName + ", description=" + gameDescription + ", genre=" + genre +
                 ", releaseDate=" + releaseDate + ", developer=" + developer + "]";
     }
 
@@ -42,7 +42,7 @@ public class Game {
     }
 
     public String getDescription() {
-        return description;
+        return gameDescription;
     }
 
     public String getGenre() {
@@ -66,7 +66,7 @@ public class Game {
     }
 
     public void setDescription(String description) {
-        this.description = description;
+        this.gameDescription = description;
     }
 
     public void setGenre(String genre) {
