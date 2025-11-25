@@ -13,4 +13,18 @@ public class UserController {
         return "Hello User.";
     }
 
+
+    @RequestMapping("/trophies")
+    @ResponseBody
+    public String displayTrophies() {
+        return "Your trophies should display here";
+    }
+
+
+    @RequestMapping("admin")
+    @ResponseBody
+    public String displayAdminPage() {
+        return "This is actually a super secret admin page";
+    }
+
 }

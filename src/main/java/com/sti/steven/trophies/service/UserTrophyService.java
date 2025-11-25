@@ -1,11 +1,11 @@
-package service;
+package com.sti.steven.trophies.service;
 
-import game.Trophy;
-import interfaces.TrophyRepository;
-import interfaces.UserRepository;
+import com.sti.steven.trophies.game.Trophy;
+import com.sti.steven.trophies.interfaces.TrophyRepository;
+import com.sti.steven.trophies.interfaces.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import product.User;
+import com.sti.steven.trophies.product.User;
 
 @Service
 public class UserTrophyService {

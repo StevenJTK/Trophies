@@ -1,4 +1,4 @@
-package game;
+package com.sti.steven.trophies.game;
 
 public enum Trophies {
     BRONZE,

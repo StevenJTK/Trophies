@@ -1,4 +1,4 @@
-package security;
+package com.sti.steven.trophies.security;
 
 
 import org.springframework.context.annotation.Bean;
@@ -21,10 +21,10 @@ public class WebSecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests((requests) -> requests
-                .requestMatchers("/", "home", "/hello").permitAll()
+                .requestMatchers("/", "home", "/hello", "/admin", "/trophies").permitAll()
                 .anyRequest().authenticated()
                 ).formLogin((form) -> form
-                        .loginPage("login")
+                        .loginPage("/login")
                         .permitAll()
                 )
                 .logout((logout) -> logout.permitAll());

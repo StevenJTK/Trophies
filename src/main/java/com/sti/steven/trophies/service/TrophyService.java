@@ -1,8 +1,9 @@
-package service;
+package com.sti.steven.trophies.service;
 
-import game.Trophy;
-import interfaces.GameRepository;
-import interfaces.TrophyRepository;
+import com.sti.steven.trophies.game.Trophies;
+import com.sti.steven.trophies.game.Trophy;
+import com.sti.steven.trophies.interfaces.GameRepository;
+import com.sti.steven.trophies.interfaces.TrophyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -33,14 +34,14 @@ public class TrophyService {
         return trophy;
     }
 
-    public Trophy findTrophyType(String type) {
+    public Trophy findByTrophyType(String type) {
         Trophy trophy;
 
         if(type == null) {
             throw new IllegalArgumentException("Trophy type cannot be null");
         }
 
-        trophy = trophyRepository.findTrophyType(type);
+        trophy = trophyRepository.findByTrophyType(Trophies.valueOf(type));
 
         if(trophy == null) {
             throw new IllegalArgumentException("Trophy was not found or does not exist");
@@ -48,13 +49,13 @@ public class TrophyService {
         return trophy;
     }
 
-    public Trophy findTrophyDescription(String description) {
+    public Trophy findByTrophyDescription(String description) {
         Trophy trophy;
         if(description == null) {
             throw new IllegalArgumentException("Trophy description cannot be null");
         }
 
-        trophy = trophyRepository.findTrophyDescription(description);
+        trophy = trophyRepository.findByTrophyDescription(description);
 
         if(trophy == null) {
             throw new IllegalArgumentException("Description was not found or does not exist");

@@ -1,7 +1,7 @@
-package game;
+package com.sti.steven.trophies.game;
 
 import jakarta.persistence.*;
-import product.User;
+import com.sti.steven.trophies.product.User;
 
 import java.util.HashSet;
 import java.util.Set;

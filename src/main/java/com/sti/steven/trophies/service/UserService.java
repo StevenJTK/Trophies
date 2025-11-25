@@ -1,12 +1,12 @@
-package service;
+package com.sti.steven.trophies.service;
 
-import interfaces.RoleRepository;
+import com.sti.steven.trophies.interfaces.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import product.Role;
-import product.User;
-import interfaces.UserRepository;
+import com.sti.steven.trophies.product.Role;
+import com.sti.steven.trophies.product.User;
+import com.sti.steven.trophies.interfaces.UserRepository;
 
 @Service
 public class UserService {

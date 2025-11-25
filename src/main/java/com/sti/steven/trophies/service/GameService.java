@@ -1,9 +1,9 @@
-package service;
+package com.sti.steven.trophies.service;
 
 
-import game.Game;
-import interfaces.GameRepository;
-import interfaces.TrophyRepository;
+import com.sti.steven.trophies.game.Game;
+import com.sti.steven.trophies.interfaces.GameRepository;
+import com.sti.steven.trophies.interfaces.TrophyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

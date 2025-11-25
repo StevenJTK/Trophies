@@ -1,6 +1,6 @@
-package interfaces;
+package com.sti.steven.trophies.interfaces;
 
-import game.Game;
+import com.sti.steven.trophies.game.Game;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface GameRepository extends JpaRepository<Game, Integer> {
