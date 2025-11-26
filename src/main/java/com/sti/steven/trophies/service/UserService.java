@@ -3,35 +3,53 @@ package com.sti.steven.trophies.service;
 import com.sti.steven.trophies.interfaces.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.sti.steven.trophies.product.Role;
 import com.sti.steven.trophies.product.User;
 import com.sti.steven.trophies.interfaces.UserRepository;
+
+import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class UserService {
 
     private final RoleRepository roleRepository;
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserService(RoleRepository roleRepository, UserRepository userRepository) {
+    public UserService(RoleRepository roleRepository, UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.roleRepository = roleRepository;
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public User createNewUser(User user) {
         if (user == null) {
             throw new IllegalArgumentException("User cannot be null.");
         }
+
+        if(userRepository.existsByUsername(user.getUsername()))
+            throw new IllegalArgumentException("Username already exists.");
+
+        if(userRepository.existsByEmail(user.getEmail()))
+            throw new IllegalArgumentException("Email already exists.");
+
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
     }
 
     public void giveRoleToUser(User user, Role role) {
         if (user == null || role == null) {
-            throw new IllegalArgumentException("User cannot be null.");
+            throw new IllegalArgumentException("User or Role cannot be null.");
         }
-        if (!user.getRoles().contains(role)) {
+
+        boolean hasRole = user.getRoles().stream()
+                .anyMatch(r -> r.getId() == role.getId());
+
+        if (!hasRole) {
             user.getRoles().add(role);
             userRepository.save(user);
         }
@@ -42,7 +60,7 @@ public class UserService {
             throw new IllegalArgumentException("User or role cannot be null.");
         }
 
-        if (!user.getRoles().contains(role)) {
+        if (user.getRoles().contains(role)) {
             user.getRoles().remove(role);
             userRepository.save(user);
         } else {
@@ -50,47 +68,26 @@ public class UserService {
         }
     }
 
-    public User findByUsername(String username) {
-        User user;
-
+    public Optional<User> findByUsername(String username) {
         if (username == null) {
             throw new IllegalArgumentException("Username cannot be null.");
         }
-        user = userRepository.findByUsername(username);
 
-        if (user == null) {
-            throw new UsernameNotFoundException("User was not found.");
-        }
-
-        return user;
+        return userRepository.findByUsername(username);
     }
 
-    public User findByEmail(String email) {
-        User user;
-
+    public Optional<User> findByEmail(String email) {
         if (email == null) {
             throw new IllegalArgumentException("Email cannot be null.");
         }
 
-        user = userRepository.findByEmail(email);
-
-        if (user == null) {
-            throw new UsernameNotFoundException("User was not found.");
-        }
-
-        return user;
+        return userRepository.findByEmail(email);
     }
 
-    public Role findRoleByName(String roleName) {
-        Role role;
-
-        if(roleName == null) {
-            throw new IllegalArgumentException("Role name cannot be null.");
+    public Optional<Role> findRoleByName(String roleName) {
+        if (roleName == null) {
+            throw new IllegalArgumentException("Role cannot be null.");
         }
-        role = roleRepository.findByRoleName(roleName);
-        if(role == null) {
-            throw new IllegalArgumentException("This role does not exist.");
-        }
-        return role;
+        return roleRepository.findByRoleName(roleName);
     }
 }
