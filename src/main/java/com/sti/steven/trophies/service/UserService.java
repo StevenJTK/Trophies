@@ -2,15 +2,14 @@ package com.sti.steven.trophies.service;
 
 import com.sti.steven.trophies.interfaces.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.sti.steven.trophies.product.Role;
 import com.sti.steven.trophies.product.User;
 import com.sti.steven.trophies.interfaces.UserRepository;
 
+import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 
 @Service
 public class UserService {
@@ -41,16 +40,21 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public void giveRoleToUser(User user, Role role) {
-        if (user == null || role == null) {
-            throw new IllegalArgumentException("User or Role cannot be null.");
+    public void giveAdminToUser(User user) {
+        if (user == null) {
+            throw new IllegalArgumentException("User cannot be null.");
+        }
+
+        Optional <Role> adminRole = roleRepository.findByRoleName("ADMIN");
+        if(adminRole.isEmpty()) {
+            throw new IllegalArgumentException("Role does not exist.");
         }
 
         boolean hasRole = user.getRoles().stream()
-                .anyMatch(r -> r.getId() == role.getId());
+                .anyMatch(r -> Objects.equals(r.getRoleName(), adminRole.get().getRoleName()));
 
         if (!hasRole) {
-            user.getRoles().add(role);
+            user.getRoles().add(adminRole.get());
             userRepository.save(user);
         }
     }
