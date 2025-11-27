@@ -2,6 +2,9 @@ package com.sti.steven.trophies.service;
 
 import com.sti.steven.trophies.interfaces.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.sti.steven.trophies.product.Role;
@@ -26,6 +29,9 @@ public class UserService {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
     }
+
+    @Autowired
+    AuthenticationManager authManager;
 
     public User createNewUser(User user) {
         if (user == null) {
@@ -103,5 +109,14 @@ public class UserService {
             throw new IllegalArgumentException("Role cannot be null.");
         }
         return roleRepository.findByRoleName(roleName);
+    }
+
+    public String verify(User user) {
+        Authentication authentication = authManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
+        if(authentication.isAuthenticated()) {
+            return "Successfully verified.";
+        }
+
+        return "Login failed.";
     }
 }
