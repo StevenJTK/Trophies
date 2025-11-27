@@ -1,4 +1,4 @@
-package com.sti.steven.trophies.util;
+package com.sti.steven.trophies.jwt;
 
 import com.sti.steven.trophies.product.Role;
 import com.sti.steven.trophies.product.Roles;
@@ -23,9 +23,9 @@ import java.util.stream.Collectors;
 
 
 @Component
-public class JWTUtil {
+public class JwtUtil {
 
-    private static final Logger logger = LoggerFactory .getLogger(JWTUtil.class);
+    private static final Logger logger = LoggerFactory .getLogger(JwtUtil.class);
     private final String base64EncodedSecretKey = "U2VjdXJlQXBpX1NlY3JldEtleV9mb3JfSFMyNTYwX3NlY3JldF9wcm9qZWN0X2tleV9leGFtcGxl" ;
 
     private final byte[] keyBytes = Base64.getDecoder().decode(base64EncodedSecretKey );
