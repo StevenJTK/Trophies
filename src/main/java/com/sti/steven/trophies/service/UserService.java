@@ -11,6 +11,8 @@ import com.sti.steven.trophies.interfaces.UserRepository;
 import java.util.Objects;
 import java.util.Optional;
 
+import static com.sti.steven.trophies.interfaces.RoleRepository.userRole;
+
 @Service
 public class UserService {
 
@@ -37,7 +39,15 @@ public class UserService {
             throw new IllegalArgumentException("Email already exists.");
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return userRepository.save(user);
+
+        Optional<Role> userRole = roleRepository.findByRoleName("USER");
+        if(userRole.isEmpty()) {
+            throw new IllegalArgumentException("USER role does not exist.");
+        }
+        user.getRoles().add(userRole.get());
+
+        userRepository.save(user);
+        return user;
     }
 
     public void giveAdminToUser(User user) {

@@ -33,6 +33,10 @@ public class Role {
     public void setRoleName(String name) {
         this.roleName = name;
     }
+
+    public boolean isEmpty() {
+        return roleName.isEmpty();
+    }
 }
 
 
