@@ -33,9 +33,7 @@ public class WebSecurityConfig {
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                 .requestMatchers(
-                        "/", "/home", "/hello",
-                        "/users",
-                        "/userDetails"
+                        "/", "/home"
                 ).permitAll()
                 .anyRequest().authenticated()
                 )

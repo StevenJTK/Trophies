@@ -90,4 +90,7 @@ public class User {
     public void setEnabled(boolean enabled) {
         isEnabled = enabled;
     }
+
+    public void setUsername(String username) {
+    }
 }

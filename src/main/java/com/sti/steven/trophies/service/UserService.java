@@ -1,5 +1,6 @@
 package com.sti.steven.trophies.service;
 
+import com.sti.steven.trophies.dto.UserDTO;
 import com.sti.steven.trophies.interfaces.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -13,8 +14,6 @@ import com.sti.steven.trophies.interfaces.UserRepository;
 
 import java.util.Objects;
 import java.util.Optional;
-
-import static com.sti.steven.trophies.interfaces.RoleRepository.userRole;
 
 @Service
 public class UserService {
@@ -33,27 +32,30 @@ public class UserService {
     @Autowired
     AuthenticationManager authManager;
 
-    public User createNewUser(User user) {
-        if (user == null) {
+    public User createNewUser(UserDTO dto) {
+        if (dto == null) {
             throw new IllegalArgumentException("User cannot be null.");
         }
 
-        if(userRepository.existsByUsername(user.getUsername()))
+        if(userRepository.existsByUsername(dto.getUsername()))
             throw new IllegalArgumentException("Username already exists.");
 
-        if(userRepository.existsByEmail(user.getEmail()))
+        if(userRepository.existsByEmail(dto.getEmail()))
             throw new IllegalArgumentException("Email already exists.");
 
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        User user = new User();
+        user.setUsername(dto.getUsername());
+        user.setPassword(passwordEncoder.encode(dto.getPassword()));
+        user.setEmail(dto.getEmail());
 
         Optional<Role> userRole = roleRepository.findByRoleName("USER");
-        if(userRole.isEmpty()) {
-            throw new IllegalArgumentException("USER role does not exist.");
-        }
-        user.getRoles().add(userRole.get());
 
-        userRepository.save(user);
-        return user;
+        if(userRole.isEmpty()) {
+            throw new IllegalArgumentException("Role does not exist.");
+        }
+
+        user.getRoles().add(userRole.get());
+        return userRepository.save(user);
     }
 
     public void giveAdminToUser(User user) {

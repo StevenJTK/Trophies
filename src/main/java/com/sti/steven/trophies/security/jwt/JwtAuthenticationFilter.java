@@ -18,6 +18,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype. Component;
 import org.springframework.web.filter.OncePerRequestFilter ;
 import java.io.IOException ;
+import java.util.List;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -38,6 +39,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
+
+        String path = request.getServletPath();
+        if (path.equals("/users") || path.equals("/login") || path.equals("/home")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
         logger.debug("---- JwtAuthenticationFilter START ----");
 
