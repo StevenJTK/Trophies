@@ -1,4 +1,4 @@
-package com.sti.steven.trophies.jwt;
+package com.sti.steven.trophies.security.jwt;
 
 import com.sti.steven.trophies.product.Role;
 import com.sti.steven.trophies.product.Roles;

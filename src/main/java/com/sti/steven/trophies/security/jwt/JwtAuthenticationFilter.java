@@ -1,4 +1,4 @@
-package com.sti.steven.trophies.jwt;
+package com.sti.steven.trophies.security.jwt;
 
 import com.sti.steven.trophies.service.CustomUserDetailsService;
 import io.micrometer.common.lang. NonNull;
@@ -37,48 +37,39 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull HttpServletRequest request,
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain
-    ) throws ServletException, IOException{
+    ) throws ServletException, IOException {
 
         logger.debug("---- JwtAuthenticationFilter START ----");
 
-        String token = extractJwtFromCookie(request);
-        if(token == null) {
-            token = extractJwtFromRequest(request);
-        }
-            if(token == null) {
-                logger.debug("No JWT token found in request.");
-                filterChain.doFilter(request, response);
-                return;
-            }
+        try {
+            String token = extractJwtFromCookie(request);
+            if (token == null) token = extractJwtFromRequest(request);
 
-            logger.debug("JWT token found: {}", token);
+            if (token != null && jwtUtil.validateJwtToken(token)) {
+                String username = jwtUtil.getUsernameFromToken(token);
 
-        if (jwtUtil.validateJwtToken(token)) {
-            String username = jwtUtil.getUsernameFromToken(token);
+                if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                    UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
 
-            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
-
-                if (userDetails != null && userDetails.isEnabled()) {
-                    UsernamePasswordAuthenticationToken authentication =
-                            new UsernamePasswordAuthenticationToken(
-                                    userDetails,
-                                    null,
-                                    userDetails.getAuthorities()
-                            );
-
-                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
-                    logger.debug("Authenticated (DB verified) user '{}'.", username);
+                    if (userDetails != null && userDetails.isEnabled()) {
+                        UsernamePasswordAuthenticationToken authentication =
+                                new UsernamePasswordAuthenticationToken(
+                                        userDetails,
+                                        null,
+                                        userDetails.getAuthorities()
+                                );
+                        authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                        SecurityContextHolder.getContext().setAuthentication(authentication);
+                        logger.debug("Authenticated user '{}'", username);
+                    }
                 }
-            } else {
-                logger.warn("Invalid token");
             }
-
-            filterChain.doFilter(request, response);
-            logger.debug("---- JwtAuthenticationFilter END ----");
+        } catch (Exception e) {
+            logger.error("Cannot set user authentication: {}", e.getMessage());
         }
 
+        filterChain.doFilter(request, response);
+        logger.debug("---- JwtAuthenticationFilter END ----");
     }
 
     private String extractJwtFromCookie(HttpServletRequest request) {
