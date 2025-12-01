@@ -1,20 +1,27 @@
 package com.sti.steven.trophies.controller;
 
+import com.sti.steven.trophies.dto.UserDTO;
 import com.sti.steven.trophies.interfaces.UserRepository;
 import com.sti.steven.trophies.product.User;
 import com.sti.steven.trophies.security.jwt.JwtAuthenticationFilter;
+import com.sti.steven.trophies.service.JwtService;
+import com.sti.steven.trophies.service.UserService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import com.sti.steven.trophies.security.jwt.JwtUtil;
 
@@ -25,17 +32,25 @@ public class AuthController {
 
     private static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
 
-    UserRepository userRepository;
-
-    AuthenticationManager authenticationManager;
+    private final UserRepository userRepository;
+    private final JwtService jwtService;
+    private final UserService userService;
+    private final AuthenticationManager authenticationManager;
 
     @Autowired
     private JwtUtil jwtUtil;
 
-    @PostMapping("/login")
+    public AuthController(UserRepository userRepository, JwtService jwtService, UserService userService, AuthenticationManager authenticationManager) {
+        this.userRepository = userRepository;
+        this.jwtService = jwtService;
+        this.userService = userService;
+        this.authenticationManager = authenticationManager;
+    }
+
+  /*  @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(
-            @RequestParam String username,
-            @RequestParam String password,
+            @RequestParam(required = false) String username,
+            @RequestParam (required = false)String password,
             HttpServletResponse response
     ) {
         logger.debug("Attempting authentication for user: {}", username);
@@ -65,7 +80,40 @@ public class AuthController {
                 "roles", userDetails.getAuthorities(),
                 "token", token
         ));
+    } */
+
+    @PostMapping("/login")
+    public ResponseEntity<?> authenticateUser(@RequestBody(required = false) UserDTO dto) {
+        if(dto == null || dto.getUsername() == null || dto.getPassword() == null) {
+            return ResponseEntity.badRequest().body("User data is missing.");
+        }
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(dto.getUsername(), dto.getPassword())
+        );
+        return ResponseEntity.ok("OK");
     }
 
+    @PostMapping("/register")
+    public ResponseEntity<?> registerUser(@RequestBody UserDTO dto) {
+        if(dto == null || dto.getUsername() == null || dto.getPassword() == null) {
+            return ResponseEntity.badRequest().body("Fields are missing.");
+        }
 
+        if (userService.usernameExists(dto.getUsername()) || userService.emailExists(dto.getEmail())){
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Username or email already exists.");
+        }
+
+        User registerUser = userService.createNewUser(dto);
+
+        String token = jwtService.generateToken(registerUser);
+
+        Map<String, Object> responseBody = Map.of(
+                "username", registerUser.getUsername(),
+                "email", registerUser.getEmail(),
+                "token", token
+        );
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseBody);
+
+    }
 }

@@ -3,17 +3,17 @@ package com.sti.steven.trophies.security.jwt;
 import com.sti.steven.trophies.product.Role;
 import com.sti.steven.trophies.product.Roles;
 import com.sti.steven.trophies.product.User;
-
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
-
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
-
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
@@ -21,87 +21,84 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-
 @Component
 public class JwtUtil {
 
-    private static final Logger logger = LoggerFactory .getLogger(JwtUtil.class);
-    private final String base64EncodedSecretKey = "U2VjdXJlQXBpX1NlY3JldEtleV9mb3JfSFMyNTYwX3NlY3JldF9wcm9qZWN0X2tleV9leGFtcGxl" ;
+    private static final Logger logger = LoggerFactory.getLogger(JwtUtil.class);
 
-    private final byte[] keyBytes = Base64.getDecoder().decode(base64EncodedSecretKey );
-    private final SecretKey key = Keys.hmacShaKeyFor (keyBytes);
-    private final int jwtExpirationMs = (int) TimeUnit.HOURS.toMillis(1);
+    private final String base64EncodedSecretKey = "w4F7n8YtRzP9sX1vKj5Lq6Mv2BdVfG7hQyZrNc8Ua0E=";
+    private final SecretKey key;
+    private final long jwtExpirationMs = TimeUnit.HOURS.toMillis(1);
 
+    public JwtUtil() {
+        byte[] keyBytes = Base64.getDecoder().decode(base64EncodedSecretKey);
+        this.key = Keys.hmacShaKeyFor(keyBytes);
+    }
 
     public String generateToken(User user) {
         List<String> roles = user.getRoles().stream()
                 .map(Role::getRoleName)
                 .toList();
 
-        String token = Jwts.builder()
-                .subject(user.getUsername ())
-                .claim("authorities" , roles)
-                .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis () + jwtExpirationMs ))
-                .signWith(key)
+        return Jwts.builder()
+                .setSubject(user.getUsername())
+                .claim("authorities", roles)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationMs))
+                .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
-        logger.info("Token generated succesfully for user: {}", user.getUsername());
-        return token;
     }
 
     public String getUsernameFromToken(String token) {
         try {
-            Claims claims = Jwts.parser()
+            Jws<Claims> jws = Jwts.parser()
                     .verifyWith(key)
                     .build()
-                    .parseSignedClaims(token)
-                    .getPayload();
+                    .parseSignedClaims(token);
 
-            String username = claims.getSubject();
-            logger.debug("Extracted username '{}' from token", username);
-            return username;
-        }   catch (Exception e) {
-            logger.warn("Failed to extract username from token", e.getMessage());
+            return jws.getBody().getSubject();
+        } catch (JwtException e) {
+            logger.warn("Failed to get username from JWT: {}", e.getMessage());
             return null;
         }
     }
 
-    public boolean validateJwtToken (String authToken) {
+    public boolean validateJwtToken(String token) {
         try {
             Jwts.parser()
                     .verifyWith(key)
                     .build()
-                    .parseSignedClaims(authToken);
-            logger.debug("JWT validation succeeded");
+                    .parseSignedClaims(token);
             return true;
-        } catch (Exception e) {
-            logger.error("JWT validation failed: {} ", e.getMessage());
+        } catch (JwtException e) {
+            logger.error("JWT validation failed: {}", e.getMessage());
+            return false;
         }
-        return false;
     }
-    public Set<Roles> getRolesFromToken (String token) {
-        Claims claims = Jwts.parser()
-                .verifyWith(key)
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
-        List<?> authoritiesClaim = claims.get("authorities", List.class);
 
-        if(authoritiesClaim == null || authoritiesClaim.isEmpty()) {
-            logger.warn("No authorities found in token.");
+    public Set<Roles> getRolesFromToken(String token) {
+        try {
+            Jws<Claims> jws = Jwts.parser()
+                    .verifyWith(key)
+                    .build()
+                    .parseSignedClaims(token);
+
+            List<?> authoritiesClaim = jws.getBody().get("authorities", List.class);
+            if (authoritiesClaim == null) {
+                return Set.of();
+            }
+
+            return authoritiesClaim.stream()
+                    .filter(String.class::isInstance)
+                    .map(String.class::cast)
+                    .map(role -> role.replace("ROLE_", ""))
+                    .map(String::toUpperCase)
+                    .map(Roles::valueOf)
+                    .collect(Collectors.toSet());
+
+        } catch (JwtException e) {
+            logger.warn("Failed to get roles from JWT: {}", e.getMessage());
             return Set.of();
         }
-
-        Set<Roles> roles = authoritiesClaim.stream()
-                .filter(String.class::isInstance )
-                .map(String.class::cast)
-                .map(role -> role.replace("ROLE_", ""))
-                .map(String::toUpperCase )
-                .map(Roles::valueOf)
-                .collect(Collectors.toSet());
-
-        logger.debug("Extracted roles from JWT tokens: {}", roles);
-        return roles;
-
     }
 }

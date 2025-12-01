@@ -121,4 +121,12 @@ public class UserService {
 
         return "Login failed.";
     }
+
+    public boolean usernameExists(String username) {
+        return userRepository.existsByUsername(username);
+    }
+
+    public boolean emailExists(String email) {
+        return userRepository.existsByEmail(email);
+    }
 }

@@ -3,16 +3,15 @@ package com.sti.steven.trophies.service;
 import com.sti.steven.trophies.interfaces.UserRepository;
 import com.sti.steven.trophies.product.User;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
-public class CustomUserDetailsService implements UserDetailsService {
+public class UserDetailsService implements org.springframework.security.core.userdetails.UserDetailsService {
 
     private final UserRepository userRepository;
 
-    public CustomUserDetailsService(UserRepository userRepository) {
+    public UserDetailsService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 

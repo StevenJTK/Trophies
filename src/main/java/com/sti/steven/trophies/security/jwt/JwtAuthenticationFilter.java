@@ -1,6 +1,6 @@
 package com.sti.steven.trophies.security.jwt;
 
-import com.sti.steven.trophies.service.CustomUserDetailsService;
+import com.sti.steven.trophies.service.UserDetailsService;
 import io.micrometer.common.lang. NonNull;
 import jakarta.servlet.FilterChain ;
 import jakarta.servlet.ServletException ;
@@ -18,21 +18,19 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype. Component;
 import org.springframework.web.filter.OncePerRequestFilter ;
 import java.io.IOException ;
-import java.util.List;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
 
     private final JwtUtil jwtUtil ;
-    private final CustomUserDetailsService customUserDetailsService ;
+    private final UserDetailsService customUserDetailsService ;
 
     @Autowired
-    public JwtAuthenticationFilter(JwtUtil jwtUtil, CustomUserDetailsService customUserDetailsService) {
+    public JwtAuthenticationFilter(JwtUtil jwtUtil, UserDetailsService customUserDetailsService) {
         this.jwtUtil = jwtUtil;
         this.customUserDetailsService = customUserDetailsService;
     }
-
     @Override
     protected void doFilterInternal(
             @NonNull HttpServletRequest request,
@@ -41,11 +39,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     ) throws ServletException, IOException {
 
         String path = request.getServletPath();
-        if (path.equals("/users") || path.equals("/login") || path.equals("/home")) {
+        if (path.equals("/register") || path.equals("/login")) {
             filterChain.doFilter(request, response);
             return;
         }
-
         logger.debug("---- JwtAuthenticationFilter START ----");
 
         try {
@@ -54,6 +51,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             if (token != null && jwtUtil.validateJwtToken(token)) {
                 String username = jwtUtil.getUsernameFromToken(token);
+                logger.debug("Token: {}, valid: {}", token, jwtUtil.validateJwtToken(token));
 
                 if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                     UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
