@@ -35,6 +35,15 @@ public class JwtUtil {
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
 
+    public SecretKey getKey() {
+        return key;
+    }
+
+    public long getJwtExpirationMs() {
+        return jwtExpirationMs;
+    }
+
+
     public String generateToken(User user) {
         List<String> roles = user.getRoles().stream()
                 .map(Role::getRoleName)
@@ -42,10 +51,12 @@ public class JwtUtil {
 
         return Jwts.builder()
                 .setSubject(user.getUsername())
-                .claim("authorities", roles)
+                .claim("authorities", user.getRoles().stream()
+                        .map(Role::getRoleName)
+                        .toList())
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationMs))
-                .signWith(key, SignatureAlgorithm.HS256)
+                .setExpiration(new Date(System.currentTimeMillis() + getJwtExpirationMs()))
+                .signWith(getKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
