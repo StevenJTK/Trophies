@@ -26,27 +26,4 @@ public class UserController {
         this.userRepository = userRepository;
         this.authenticationManager = authenticationManager;
     }
-
-   /* @PostMapping("/register")
-    public ResponseEntity<UserDTO> createUser(@RequestBody UserDTO dto) {
-        User user = userService.createNewUser(dto);
-        UserDTO responseDTO = new UserDTO(user.getUsername(), null, user.getEmail());
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
-    }
-
-    @GetMapping("/userDetails/{id}")
-    public ResponseEntity<User> userDetails(@PathVariable int id) {
-        Optional<User> userOptional = userRepository.findById(id);
-
-        return userOptional
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
-    }
-
-    @PostMapping("hello")
-    public ResponseEntity<String> hello() {
-        return ResponseEntity.ok("hello");
-    } */
-
 }

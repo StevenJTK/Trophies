@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import com.sti.steven.trophies.security.jwt.JwtUtil;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @Controller
@@ -46,41 +48,6 @@ public class AuthController {
         this.userService = userService;
         this.authenticationManager = authenticationManager;
     }
-
-  /*  @PostMapping("/login")
-    public ResponseEntity<?> authenticateUser(
-            @RequestParam(required = false) String username,
-            @RequestParam (required = false)String password,
-            HttpServletResponse response
-    ) {
-        logger.debug("Attempting authentication for user: {}", username);
-
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(username, password)
-        );
-
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-
-        User user = userRepository.findByUsername(userDetails.getUsername())
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        String token = jwtUtil.generateToken(user);
-
-        Cookie cookie = new Cookie("authToken", token);
-        cookie.setHttpOnly(true);
-        cookie.setSecure(false);
-        cookie.setPath("/");
-        cookie.setMaxAge(3600);
-        response.addCookie(cookie);
-
-        logger.info("Authentication successful for user: {}", userDetails.getUsername());
-
-        return ResponseEntity.ok(Map.of(
-                "username", userDetails.getUsername(),
-                "roles", userDetails.getAuthorities(),
-                "token", token
-        ));
-    } */
 
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@RequestBody(required = false) UserDTO dto) {
@@ -107,13 +74,26 @@ public class AuthController {
 
         String token = jwtService.generateToken(registerUser);
 
-        Map<String, Object> responseBody = Map.of(
-                "username", registerUser.getUsername(),
-                "email", registerUser.getEmail(),
-                "token", token
-        );
+        if(token == null) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to generate token.");
+        }
+
+        if(registerUser == null) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("User creation failed.");
+        }
+
+        Map<String, Object> responseBody = new HashMap<>();
+        responseBody.put("username", registerUser.getUsername());
+        responseBody.put("email", registerUser.getEmail());
+        responseBody.put("token", token);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(responseBody);
 
+    }
+
+    @PostMapping("/hello")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> hello() {
+        return ResponseEntity.ok("Hello World!");
     }
 }
