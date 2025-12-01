@@ -1,7 +1,9 @@
 package com.sti.steven.trophies.controller;
 
 import com.sti.steven.trophies.dto.UserDTO;
+import com.sti.steven.trophies.interfaces.RoleRepository;
 import com.sti.steven.trophies.interfaces.UserRepository;
+import com.sti.steven.trophies.product.Role;
 import com.sti.steven.trophies.product.User;
 import com.sti.steven.trophies.security.jwt.JwtAuthenticationFilter;
 import com.sti.steven.trophies.service.JwtService;
@@ -20,14 +22,15 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import com.sti.steven.trophies.security.jwt.JwtUtil;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Controller
 public class AuthController {
@@ -38,18 +41,21 @@ public class AuthController {
     private final JwtService jwtService;
     private final UserService userService;
     private final AuthenticationManager authenticationManager;
+    private final RoleRepository roleRepository;
 
     @Autowired
     private JwtUtil jwtUtil;
 
-    public AuthController(UserRepository userRepository, JwtService jwtService, UserService userService, AuthenticationManager authenticationManager) {
+    public AuthController(UserRepository userRepository, JwtService jwtService, UserService userService,
+                          AuthenticationManager authenticationManager, RoleRepository roleRepository1) {
         this.userRepository = userRepository;
         this.jwtService = jwtService;
         this.userService = userService;
         this.authenticationManager = authenticationManager;
+        this.roleRepository = roleRepository1;
     }
 
-    @PostMapping("/login")
+    @PostMapping("/auth/login")
     public ResponseEntity<?> authenticateUser(@RequestBody(required = false) UserDTO dto) {
         if(dto == null || dto.getUsername() == null || dto.getPassword() == null) {
             return ResponseEntity.badRequest().body("User data is missing.");
@@ -57,7 +63,16 @@ public class AuthController {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(dto.getUsername(), dto.getPassword())
         );
-        return ResponseEntity.ok("OK");
+
+        User user = userService.findByUsername(dto.getUsername()).orElseThrow(() -> new IllegalStateException("User not found."));
+
+        String token = jwtService.generateToken(user);
+        Map<String, Object> responseBody = new HashMap<>();
+        responseBody.put("username", user.getUsername());
+        responseBody.put("email", user.getEmail());
+        responseBody.put("token", token);
+
+        return ResponseEntity.ok(responseBody);
     }
 
     @PostMapping("/register")
@@ -91,9 +106,20 @@ public class AuthController {
 
     }
 
-    @PostMapping("/hello")
+    @PutMapping("/{id}/roles")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> hello() {
-        return ResponseEntity.ok("Hello World!");
+    public ResponseEntity<?> registerAdmin(@PathVariable Integer id, @RequestBody Set<String> roleNames) {
+        User user = userRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found."));
+
+        Set<Role> roles = roleNames.stream()
+                .map(roleName -> roleRepository.findByRoleName(roleName).orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST, "Role" + roleName + " does not exist")))
+                .collect(Collectors.toSet());
+
+        user.getRoles().clear();
+        user.getRoles().addAll(roles);
+
+        userRepository.save(user);
+        return ResponseEntity.ok("Admin role has been provided.");
     }
 }

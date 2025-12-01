@@ -33,7 +33,7 @@ public class User {
         return "Username [id=" + id + ", username=" + username;
     }
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_role",
             joinColumns = @JoinColumn(name = "user_id"),
