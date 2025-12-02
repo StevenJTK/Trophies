@@ -7,6 +7,8 @@ import com.sti.steven.trophies.interfaces.TrophyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class TrophyService {
 
@@ -22,12 +24,12 @@ public class TrophyService {
     public Trophy findByTrophyName(String name) {
         Trophy trophy;
 
-        if(name == null) {
+        if (name == null) {
             throw new IllegalArgumentException("Trophy name cannot be null");
         }
 
         trophy = trophyRepository.findByTrophyName(name);
-        if(trophy == null) {
+        if (trophy == null) {
             throw new IllegalArgumentException("Trophy not found");
         }
 
@@ -37,13 +39,13 @@ public class TrophyService {
     public Trophy findByTrophyType(String type) {
         Trophy trophy;
 
-        if(type == null) {
+        if (type == null) {
             throw new IllegalArgumentException("Trophy type cannot be null");
         }
 
         trophy = trophyRepository.findByTrophyType(Trophies.valueOf(type));
 
-        if(trophy == null) {
+        if (trophy == null) {
             throw new IllegalArgumentException("Trophy was not found or does not exist");
         }
         return trophy;
@@ -51,17 +53,20 @@ public class TrophyService {
 
     public Trophy findByTrophyDescription(String description) {
         Trophy trophy;
-        if(description == null) {
+        if (description == null) {
             throw new IllegalArgumentException("Trophy description cannot be null");
         }
 
         trophy = trophyRepository.findByTrophyDescription(description);
 
-        if(trophy == null) {
+        if (trophy == null) {
             throw new IllegalArgumentException("Description was not found or does not exist");
         }
 
         return trophy;
     }
 
+    public Optional<Trophy> findByGameNameAndTrophyName(String gameName, String trophyName) {
+        return trophyRepository.findByGame_GameNameAndTrophyName(gameName, trophyName);
+    }
 }

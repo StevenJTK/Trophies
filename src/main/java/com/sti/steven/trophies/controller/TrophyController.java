@@ -8,8 +8,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Optional;
+
 @RestController
-@RequestMapping("/api/games/{gameName}")
+@RequestMapping("/api/games")
 public class TrophyController {
 
     private final TrophyService trophyService;
@@ -18,9 +20,9 @@ public class TrophyController {
         this.trophyService = trophyService;
     }
 
-    @GetMapping("/trophies/{trophyName}")
-    public Trophy getTrophyName(@PathVariable String trophyName) {
-        return trophyService.findByTrophyName(trophyName);
+    @GetMapping("{gameName}/trophies/{trophyName}")
+    public Optional<Trophy> getTrophyName(@PathVariable String gameName, @PathVariable String trophyName) {
+        return trophyService.findByGameNameAndTrophyName(gameName, trophyName);
     }
 
     @GetMapping("/trophies/{trophyDescription}")
