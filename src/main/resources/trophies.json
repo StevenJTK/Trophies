@@ -1,0 +1,160 @@
+{
+  "trophies": [
+    {
+      "name": "The True Arisen",
+      "description": "Collected all other Dragon's Dogma trophies.",
+      "type": "PLATINUM"
+    },
+
+    {
+      "name": "It Begins",
+      "description": "Complete the prologue",
+      "type": "BRONZE"
+    },
+    {
+      "name": "A New Ally",
+      "description": "Summoned your own pawn.",
+      "type": "BRONZE"
+    },
+    {
+      "name": "Getting a Head",
+      "description": "Earned the approval of the Enlistment Corps.",
+      "type": "BRONZE"
+    },
+    {
+      "name": "The Courier",
+      "description": "Entered Gran Soren.",
+      "type": "BRONZE"
+    },
+    {
+      "name": "Writ Large",
+      "description": "Received a writ from the castle.",
+      "type": "BRONZE"
+    },
+    {
+      "name": "Come Courting",
+      "description": "Attend an audience with the Duke.",
+      "type": "BRONZE"
+    },
+    {
+      "name": "The Message",
+      "description": "Received the duke's commendation.",
+      "type": "BRONZE"
+    },
+    {
+      "name": "Rough Landing",
+      "description": "Completed the urgent mission.",
+      "type": "BRONZE"
+    },
+    {
+      "name": "Destiny",
+      "description": "Accepted the Godsbane Blade",
+      "type": "BRONZE"
+    },
+    {
+      "name": "Treacherous",
+      "description": "Peered into the very depths of the world.",
+      "type": "BRONZE"
+    },
+    {
+      "name": "Freedom",
+      "description": "Escaped the yoke of eternity.",
+      "type": "BRONZE"
+    },
+    {
+      "name": "Mercy",
+      "description": "Dealt the blow of deliverance.",
+      "type": "BRONZE"
+    },
+    {
+      "name": "Solitude",
+      "description": "Obtained the almighty power of sovereignty",
+      "type": "BRONZE"
+    },
+    {
+      "name": "Servitude",
+      "description": "Soar unto a new world.",
+      "type": "BRONZE"
+    },
+    {
+      "name": "Peace",
+      "description": "Took refuge in an illusion.",
+      "type": "BRONZE"
+    },
+    {
+      "name": "Closure",
+      "description": "Put an end to all things.",
+      "type": "SILVER"
+    },
+    {
+      "name": "The Laborer",
+      "description": "Completed 50 notice board quests.",
+      "type": "BRONZE"
+    },
+    {
+      "name": "The Hero",
+      "description": "Completed all pre-planned, non-notice board quests.",
+      "type": "BRONZE"
+    },
+    {
+      "name": "Human Resources",
+      "description": "Change your vocation.",
+      "type": "BRONZE"
+    },
+    {
+      "name": "The Specialist",
+      "description": "Learned all the skills of a single vocation.",
+      "type": "BRONZE"
+    },
+    {
+      "name": "The Veteran",
+      "description": "Defeated 3,000 enemies",
+      "type": "BRONZE"
+    },
+    {
+      "name": "Headshunter",
+      "description": "Defeated a hydra or archydra.",
+      "type": "BRONZE"
+    },
+    {
+      "name": "Eye Contact",
+      "description": "Defeated an evil eye.",
+      "type": "BRONZE"
+    },
+    {
+      "name": "Serpents' Bane",
+      "description": "Defeated a drake, wyrm and wyvern.",
+      "type": "BRONZE"
+    },
+    {
+      "name": "The Messiah",
+      "description": "Defeated the Ur-Dragon.",
+      "type": "SILVER"
+    },
+    {
+      "name": "Local Recruit",
+      "description": "Directly enlist a pawn to your party.",
+      "type": "BRONZE"
+    },
+    {
+      "name": "Foreign Recruit",
+      "description": "Enlisted a pawn to your party from beyond the rift.",
+      "type": "BRONZE"
+    },
+    {
+      "name": "The Ever-Turning Wheel",
+      "description": "Completed the adventure a second time.",
+      "type": "GOLD"
+    },
+    {
+      "name": "Hardened Veteran",
+      "description": "Completed the game in hard mode.",
+      "type": "SILVER"
+    },
+    {
+      "name": "True Conqueror",
+      "description": "Defeated Daimon in his true form.",
+      "type": "SILVER"
+    }
+  ]
+}

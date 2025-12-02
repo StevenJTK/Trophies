@@ -1,5 +1,6 @@
 package com.sti.steven.trophies.game;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import com.sti.steven.trophies.product.User;
 
@@ -12,9 +13,13 @@ public class Trophy {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonProperty("id")
     private int id;
+    @JsonProperty("name")
     private String trophyName;
+    @JsonProperty("type")
     private Trophies trophyType;
+    @JsonProperty("description")
     private String trophyDescription;
 
 
@@ -52,5 +57,9 @@ public class Trophy {
     }
     public void setTrophyDescription(String trophyDescription) {
         this.trophyDescription = trophyDescription;
+    }
+
+    public void setGame(Game dragonDogma) {
+        this.game = dragonDogma;
     }
 }

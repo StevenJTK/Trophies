@@ -1,5 +1,6 @@
 package com.sti.steven.trophies.game;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
 import java.util.HashSet;
@@ -13,9 +14,11 @@ public class Game {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @Column(unique = true)
+    @JsonProperty("name")
     private String gameName;
     private String gameDescription;
     private String genre;
+    @JsonProperty("release_date")
     private String releaseDate;
     private String developer;
 
