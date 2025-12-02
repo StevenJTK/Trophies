@@ -23,7 +23,6 @@ public class GameController {
         return gameService.findByGameName(gameName);
     }
 
-
     @GetMapping("/genre/{genre}")
     public Game getGameByGenre(@PathVariable String genre) {
         return gameService.findByGenre(genre);
