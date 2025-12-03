@@ -59,6 +59,16 @@ public class User {
         return trophies;
     }
 
+    public Set<Trophy> getCompletedTrophies() {
+        return trophies;
+    }
+
+    public void completeTrophy(Trophy trophy) {
+        if(!trophies.contains(trophy)) {
+            trophies.add(trophy);
+        }
+    }
+
     public Integer getId() {
         return id;
     }

@@ -1,7 +1,9 @@
 package com.sti.steven.trophies.service;
 
 import com.sti.steven.trophies.dto.UserDTO;
+import com.sti.steven.trophies.game.Trophy;
 import com.sti.steven.trophies.interfaces.RoleRepository;
+import com.sti.steven.trophies.interfaces.TrophyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -11,7 +13,6 @@ import org.springframework.stereotype.Service;
 import com.sti.steven.trophies.product.Role;
 import com.sti.steven.trophies.product.User;
 import com.sti.steven.trophies.interfaces.UserRepository;
-
 import java.util.Objects;
 import java.util.Optional;
 
@@ -21,12 +22,14 @@ public class UserService {
     private final RoleRepository roleRepository;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final TrophyRepository trophyRepository;
 
     @Autowired
-    public UserService(RoleRepository roleRepository, UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserService(RoleRepository roleRepository, UserRepository userRepository, PasswordEncoder passwordEncoder, TrophyRepository trophyRepository) {
         this.roleRepository = roleRepository;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.trophyRepository = trophyRepository;
     }
 
     @Autowired
@@ -128,5 +131,16 @@ public class UserService {
 
     public boolean emailExists(String email) {
         return userRepository.existsByEmail(email);
+    }
+
+    public void completeTrophyForUser(Integer userId, Integer trophyId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User does not exist."));
+
+        Trophy trophy = trophyRepository.findById(trophyId)
+                .orElseThrow(() -> new IllegalArgumentException("Trophy not found"));
+
+        user.completeTrophy(trophy);
+        userRepository.save(user);
     }
 }

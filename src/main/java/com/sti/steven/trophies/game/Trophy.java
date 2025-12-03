@@ -44,6 +44,14 @@ public class Trophy {
         return trophyType;
     }
 
+    public String getTrophyType() {
+        return trophyType.toString();
+    }
+
+    public void setTrophyType(Trophies trophyType) {
+        this.trophyType = trophyType;
+    }
+
     public String getTrophyDescription() {
         return trophyDescription;
     }

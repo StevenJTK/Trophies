@@ -1,6 +1,7 @@
 package com.sti.steven.trophies.controller;
 
 
+import com.sti.steven.trophies.game.Trophies;
 import com.sti.steven.trophies.game.Trophy;
 import com.sti.steven.trophies.service.TrophyService;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,13 +21,20 @@ public class TrophyController {
         this.trophyService = trophyService;
     }
 
-    @GetMapping("{gameName}/trophies/{trophyName}")
+    // Refactor this by creating a DTO
+    @GetMapping("/name/{gameName}/trophyName/{trophyName}")
     public Optional<Trophy> getTrophyName(@PathVariable String gameName, @PathVariable String trophyName) {
         return trophyService.findByGameNameAndTrophyName(gameName, trophyName);
     }
+    // Refactor this by creating a DTO
+    @GetMapping("/name/{gameName}/trophies/{trophyDescription}")
+    public Optional<Trophy> getTrophyDescription(@PathVariable String trophyDescription, @PathVariable String gameName) {
+        return trophyService.findByTrophyDescription(trophyDescription, gameName);
+    }
 
-    @GetMapping("/trophies/{trophyDescription}")
-    public Trophy getTrophyDescription(@PathVariable String trophyDescription) {
-        return trophyService.findByTrophyDescription(trophyDescription);
+  // This mapping does not work as of now - refactor later
+   @GetMapping("/name/{gameName}/trophyType/{findByTrophyType}")
+    public Optional<Trophy> getByTrophyType(@PathVariable Trophies findByTrophyType, @PathVariable String gameName) {
+        return trophyService.findByTrophyType(gameName, findByTrophyType);
     }
 }
