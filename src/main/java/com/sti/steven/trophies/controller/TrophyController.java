@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -27,14 +28,19 @@ public class TrophyController {
         return trophyService.findByGameNameAndTrophyName(gameName, trophyName);
     }
     // Refactor this by creating a DTO
-    @GetMapping("/name/{gameName}/trophies/{trophyDescription}")
+ /*   @GetMapping("/name/{gameName}/trophies/{trophyDescription}")
     public Optional<Trophy> getTrophyDescription(@PathVariable String trophyDescription, @PathVariable String gameName) {
         return trophyService.findByTrophyDescription(trophyDescription, gameName);
-    }
+    } */
 
   // This mapping does not work as of now - refactor later
    @GetMapping("/name/{gameName}/trophyType/{findByTrophyType}")
     public Optional<Trophy> getByTrophyType(@PathVariable Trophies findByTrophyType, @PathVariable String gameName) {
         return trophyService.findByTrophyType(gameName, findByTrophyType);
+    }
+
+    @GetMapping("/name/{gameName}/trophies")
+    public List<Trophy> findAllByGameName(@PathVariable String gameName) {
+        return trophyService.findAllByGame_GameName(gameName);
     }
 }

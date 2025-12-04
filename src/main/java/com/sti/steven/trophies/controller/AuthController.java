@@ -32,8 +32,6 @@ import java.util.stream.Collectors;
 @Controller
 public class AuthController {
 
-    private static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
-
     private final UserRepository userRepository;
     private final JwtService jwtService;
     private final UserService userService;
@@ -102,6 +100,17 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.CREATED).body(responseBody);
 
     }
+
+    @PostMapping("/auth/logout")
+    public ResponseEntity<?> logoutUser(@RequestHeader("Authorization") String authHeader) {
+        if(authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.badRequest().body("Invalid token");
+        }
+        String token = authHeader.substring(7);
+        return ResponseEntity.ok("Logged out.");
+
+    }
+
 
     @PutMapping("/{id}/roles")
     @PreAuthorize("hasRole('ADMIN')")
