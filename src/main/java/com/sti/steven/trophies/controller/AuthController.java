@@ -19,8 +19,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import com.sti.steven.trophies.security.jwt.JwtUtil;
@@ -33,8 +31,6 @@ import java.util.stream.Collectors;
 
 @Controller
 public class AuthController {
-
-    private static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
 
     private final UserRepository userRepository;
     private final JwtService jwtService;
@@ -104,6 +100,17 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.CREATED).body(responseBody);
 
     }
+
+    @PostMapping("/auth/logout")
+    public ResponseEntity<?> logoutUser(@RequestHeader("Authorization") String authHeader) {
+        if(authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.badRequest().body("Invalid token");
+        }
+        String token = authHeader.substring(7);
+        return ResponseEntity.ok("Logged out.");
+
+    }
+
 
     @PutMapping("/{id}/roles")
     @PreAuthorize("hasRole('ADMIN')")
