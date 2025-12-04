@@ -4,10 +4,9 @@ import com.sti.steven.trophies.dto.UserDTO;
 import com.sti.steven.trophies.game.Trophy;
 import com.sti.steven.trophies.interfaces.RoleRepository;
 import com.sti.steven.trophies.interfaces.TrophyRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -62,6 +61,20 @@ public class UserService {
 
         user.getRoles().add(userRole.get());
         return userRepository.save(user);
+    }
+
+
+    @Transactional
+    public User deleteUser(Integer id) {
+        if(id == null) {
+            throw new IllegalArgumentException("User cannot be null.");
+        }
+
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + id));
+
+        userRepository.delete(user);
+        return user;
     }
 
     public void giveAdminToUser(User user) {
@@ -124,7 +137,7 @@ public class UserService {
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
         if (dbUser.getIsEnabled()) {
-            return "User is already enabled.";
+            return "User succesfully enabled.";
         }
         dbUser.setIsEnabled(true);
         userRepository.save(dbUser);

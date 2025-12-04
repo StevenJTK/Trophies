@@ -5,33 +5,22 @@ import com.sti.steven.trophies.interfaces.RoleRepository;
 import com.sti.steven.trophies.interfaces.UserRepository;
 import com.sti.steven.trophies.product.Role;
 import com.sti.steven.trophies.product.User;
-import com.sti.steven.trophies.security.jwt.JwtAuthenticationFilter;
 import com.sti.steven.trophies.service.JwtService;
 import com.sti.steven.trophies.service.UserService;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import com.sti.steven.trophies.security.jwt.JwtUtil;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @Controller
-@RequestMapping("/auth")
-public class AuthController {
+@RequestMapping("/admin")
+public class AdminController {
 
     private final UserRepository userRepository;
     private final JwtService jwtService;
@@ -39,30 +28,15 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final RoleRepository roleRepository;
 
-    @Autowired
-    private JwtUtil jwtUtil;
-
-    public AuthController(UserRepository userRepository, JwtService jwtService, UserService userService,
-                          AuthenticationManager authenticationManager, RoleRepository roleRepository1) {
+    public AdminController(UserRepository userRepository, JwtService jwtService, UserService userService, AuthenticationManager authenticationManager, RoleRepository roleRepository) {
         this.userRepository = userRepository;
         this.jwtService = jwtService;
         this.userService = userService;
         this.authenticationManager = authenticationManager;
-        this.roleRepository = roleRepository1;
+        this.roleRepository = roleRepository;
     }
 
-    @PostMapping("logout")
-    public ResponseEntity<?> logoutUser(@RequestHeader("Authorization") String authHeader) {
-        if(authHeader == null || !authHeader.startsWith("Bearer ")) {
-            return ResponseEntity.badRequest().body("Invalid token");
-        }
-        String token = authHeader.substring(7);
-        return ResponseEntity.ok("Logged out.");
-
-    }
-
-
-  /*  @PutMapping("/admin/{id}/roles")
+    @PutMapping("/{id}/roles")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> registerAdmin(@PathVariable Integer id, @RequestBody Set<String> roleNames) {
         User user = userRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found."));
@@ -79,7 +53,7 @@ public class AuthController {
         return ResponseEntity.ok("Admin role has been provided.");
     }
 
-    @GetMapping("/admin/pending")
+    @GetMapping("/pending")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> findPendingUsers() {
         return ResponseEntity.ok(userService.getPendingUsers());
@@ -90,5 +64,12 @@ public class AuthController {
     public ResponseEntity<String> verifyUser(@PathVariable String username) {
         String result = userService.verify(username);
         return ResponseEntity.ok(result);
-    } */
+    }
+
+    // Mapping does delete the user, however postman shows 403 forbidden?
+    @DeleteMapping("/deleteUser/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public User deleteUser(@PathVariable Integer id) {
+        return userService.deleteUser(id);
+    }
 }

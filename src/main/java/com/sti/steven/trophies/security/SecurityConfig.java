@@ -45,10 +45,13 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/","/auth/**","/login","/register").permitAll()
-                        .requestMatchers(HttpMethod.PUT, "/users/{id}/roles").hasRole("ADMIN")
+                        .requestMatchers("/","/login","/register", "/logout").permitAll()
+                        .requestMatchers(HttpMethod.PUT, "/users/*/roles").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/games/**").hasRole("USER")
                         .requestMatchers(HttpMethod.POST, "/api/games/**", "/auth/logout").hasRole("USER")
+                        .requestMatchers(HttpMethod.POST,"/admin/verify/*").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET,"/admin/pending").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE,"/admin/deleteUser/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
