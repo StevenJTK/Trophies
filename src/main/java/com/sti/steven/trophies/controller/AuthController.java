@@ -30,6 +30,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Controller
+@RequestMapping("/auth")
 public class AuthController {
 
     private final UserRepository userRepository;
@@ -50,7 +51,7 @@ public class AuthController {
         this.roleRepository = roleRepository1;
     }
 
-    @PostMapping("/auth/login")
+    @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@RequestBody(required = false) UserDTO dto) {
         if(dto == null || dto.getUsername() == null || dto.getPassword() == null) {
             return ResponseEntity.badRequest().body("User data is missing.");
@@ -101,7 +102,7 @@ public class AuthController {
 
     }
 
-    @PostMapping("/auth/logout")
+    @PostMapping("logout")
     public ResponseEntity<?> logoutUser(@RequestHeader("Authorization") String authHeader) {
         if(authHeader == null || !authHeader.startsWith("Bearer ")) {
             return ResponseEntity.badRequest().body("Invalid token");
@@ -112,7 +113,7 @@ public class AuthController {
     }
 
 
-    @PutMapping("/{id}/roles")
+    @PutMapping("/admin/{id}/roles")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> registerAdmin(@PathVariable Integer id, @RequestBody Set<String> roleNames) {
         User user = userRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found."));
@@ -127,5 +128,18 @@ public class AuthController {
 
         userRepository.save(user);
         return ResponseEntity.ok("Admin role has been provided.");
+    }
+
+    @GetMapping("/pending")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> findPendingUsers() {
+        return ResponseEntity.ok(userService.getPendingUsers());
+    }
+
+    @PostMapping("/verify/{username}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<String> verifyUser(@PathVariable String username) {
+        String result = userService.verify(username);
+        return ResponseEntity.ok(result);
     }
 }

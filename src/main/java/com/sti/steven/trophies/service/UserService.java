@@ -8,11 +8,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.sti.steven.trophies.product.Role;
 import com.sti.steven.trophies.product.User;
 import com.sti.steven.trophies.interfaces.UserRepository;
+
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -116,13 +119,16 @@ public class UserService {
         return roleRepository.findByRoleName(roleName);
     }
 
-    public String verify(User user) {
-        Authentication authentication = authManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
-        if(authentication.isAuthenticated()) {
-            return "Successfully verified.";
-        }
+    public String verify(String username) {
+        User dbUser = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-        return "Login failed.";
+        if (dbUser.getIsEnabled()) {
+            return "User is already enabled.";
+        }
+        dbUser.setIsEnabled(true);
+        userRepository.save(dbUser);
+        return "User successfully verified.";
     }
 
     public boolean usernameExists(String username) {
@@ -142,5 +148,12 @@ public class UserService {
 
         user.completeTrophy(trophy);
         userRepository.save(user);
+    }
+
+    public List<User> getPendingUsers() {
+        return userRepository.findAll()
+                .stream()
+                .filter(u -> !u.getIsEnabled())
+                .toList();
     }
 }

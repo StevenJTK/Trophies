@@ -93,12 +93,12 @@ public class User {
         this.email = email;
     }
 
-    public boolean isEnabled() {
-        return isEnabled;
+    public void setIsEnabled(boolean isEnabled) {
+        this.isEnabled = isEnabled;
     }
 
-    public void setEnabled(boolean enabled) {
-        isEnabled = enabled;
+    public Boolean getIsEnabled() {
+        return isEnabled;
     }
 
     public void setUsername(String username) {
