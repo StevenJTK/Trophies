@@ -1,11 +1,10 @@
 package com.sti.steven.trophies.controller;
 
-import com.sti.steven.trophies.dto.UserDTO;
+
 import com.sti.steven.trophies.interfaces.RoleRepository;
 import com.sti.steven.trophies.interfaces.UserRepository;
 import com.sti.steven.trophies.product.Role;
 import com.sti.steven.trophies.product.User;
-import com.sti.steven.trophies.security.jwt.JwtAuthenticationFilter;
 import com.sti.steven.trophies.service.JwtService;
 import com.sti.steven.trophies.service.UserService;
 import org.slf4j.Logger;
@@ -17,7 +16,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -43,13 +41,16 @@ public class AdminController {
     @PutMapping("/{id}/roles")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> registerAdmin(@PathVariable Integer id, @RequestBody Set<String> roleNames) {
+        // Fetch user by id
         User user = userRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found."));
 
+        // Admin proceeds to provide role upgrade
         Set<Role> roles = roleNames.stream()
                 .map(roleName -> roleRepository.findByRoleName(roleName).orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.BAD_REQUEST, "Role" + roleName + " does not exist")))
                 .collect(Collectors.toSet());
 
+        // Update, Save and Confirm that new Admin exists
         user.getRoles().clear();
         user.getRoles().addAll(roles);
 
@@ -60,6 +61,7 @@ public class AdminController {
 
     @GetMapping("/pending")
     @PreAuthorize("hasRole('ADMIN')")
+    // Allows admins to check pending users for microservice IsEnabled
     public ResponseEntity<?> findPendingUsers() {
         return ResponseEntity.ok(userService.getPendingUsers());
     }
@@ -71,13 +73,16 @@ public class AdminController {
         return ResponseEntity.ok(result);
     }
 
-    // Mapping does delete the user, however postman shows 403 forbidden?
+    // Mapping does delete the user, however postman shows 403 forbidden? Was not able to solve in time
+    // Feedback much appreciated
     @DeleteMapping("/deleteUser/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public User deleteUser(@PathVariable Integer id) {
         return userService.deleteUser(id);
     }
 
+    // Allows admins to checkmark a trophy off for a user
+    // Intended to allow the user to do it themselves - however opted out due to time constraints
     @PostMapping("{userId}/{trophyId}/complete")
     @PreAuthorize("hasRole.'ADMIN'")
     public ResponseEntity<String> completeTrophy(@PathVariable Integer userId,

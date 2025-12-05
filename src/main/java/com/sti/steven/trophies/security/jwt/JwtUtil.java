@@ -35,15 +35,6 @@ public class JwtUtil {
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public SecretKey getKey() {
-        return key;
-    }
-
-    public long getJwtExpirationMs() {
-        return jwtExpirationMs;
-    }
-
-
     public String generateToken(User user) {
         List<String> roles = user.getRoles().stream()
                 .map(Role::getRoleName)
@@ -88,6 +79,14 @@ public class JwtUtil {
             logger.error("JWT validation failed: {}", e.getMessage());
             return false;
         }
+    }
+
+    public SecretKey getKey() {
+        return key;
+    }
+
+    public long getJwtExpirationMs() {
+        return jwtExpirationMs;
     }
 
     public Set<Roles> getRolesFromToken(String token) {

@@ -62,6 +62,7 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
+        // Left the strength at 16 - Aware that 10 is the preferred strength
         return new BCryptPasswordEncoder(16);
     }
 
