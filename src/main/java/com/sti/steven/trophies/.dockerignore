@@ -1,0 +1,21 @@
+# Git Files
+.git
+.gitignore
+
+# Logs
+.log
+
+# Build
+target/
+build/
+
+# IDE
+.idea
+*.iml
+*.ipr
+.iws
+
+# Temp Files
+*.tmp
+*.swp
+*.bak
