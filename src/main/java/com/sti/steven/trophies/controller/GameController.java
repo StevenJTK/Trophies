@@ -4,7 +4,7 @@ import com.sti.steven.trophies.game.Game;
 import com.sti.steven.trophies.service.GameService;
 import com.sti.steven.trophies.service.UserService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -25,8 +25,9 @@ public class GameController {
     }
 
     @GetMapping("/genre/{genre}")
-    public Game getGameByGenre(@PathVariable String genre) {
-        return gameService.findByGenre(genre);
+    public String getGameByGenre(@PathVariable String genre) {
+        Game game = gameService.findByGenre(genre);
+        return game.getGenre();
     }
 
     @GetMapping("/developer/{developer}")
@@ -44,10 +45,4 @@ public class GameController {
         return gameService.findByReleaseDate(release);
     }
 
-    @PostMapping("/users/{userId}/trophies/{trophyId}/complete")
-    public ResponseEntity<String> completeTrophy(@PathVariable Integer userId,
-                                                 @PathVariable Integer trophyId) {
-        userService.completeTrophyForUser(userId, trophyId);
-        return ResponseEntity.ok("Congratulations! Trophy unlocked.");
-    }
 }

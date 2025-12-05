@@ -72,4 +72,12 @@ public class AdminController {
     public User deleteUser(@PathVariable Integer id) {
         return userService.deleteUser(id);
     }
+
+    @PostMapping("{userId}/{trophyId}/complete")
+    @PreAuthorize("hasRole.'ADMIN'")
+    public ResponseEntity<String> completeTrophy(@PathVariable Integer userId,
+                                                 @PathVariable Integer trophyId) {
+        userService.completeTrophyForUser(userId, trophyId);
+        return ResponseEntity.ok("Congratulations! Trophy unlocked.");
+    }
 }
