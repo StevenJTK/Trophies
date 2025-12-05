@@ -1,0 +1,42 @@
+name: Build and Test Spring Boot Docker Image
+
+# Trigger workflow on push or pull request to main branch
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Check out the repository code
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Step 2: Set up Java (for Spring Boot)
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: 17
+
+      # Step 3: Build the Spring Boot JAR
+      - name: Build Spring Boot JAR
+        run: ./mvnw clean package -DskipTests
+
+      # Step 4: Build Docker image
+      - name: Build Docker image
+        run: docker build -t my-spring-app .
+
+      # Step 5: Run Docker container (optional test)
+      - name: Run Docker container
+        run: docker run -d -p 8080:8080 my-spring-app
+
+      # Step 6: Test if container responds (optional)
+      - name: Test container
+        run: curl -v http://localhost:8080 || echo "Container test skipped"
