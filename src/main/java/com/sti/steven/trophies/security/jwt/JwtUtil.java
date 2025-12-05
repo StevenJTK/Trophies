@@ -49,6 +49,7 @@ public class JwtUtil {
                 .map(Role::getRoleName)
                 .toList();
 
+        // Deprication indicated on my end - let me know if this could have been done better!
         return Jwts.builder()
                 .setSubject(user.getUsername())
                 .claim("authorities", user.getRoles().stream()
@@ -61,6 +62,7 @@ public class JwtUtil {
     }
 
     public String getUsernameFromToken(String token) {
+        // Attempt to verify JWS claims via key
         try {
             Jws<Claims> jws = Jwts.parser()
                     .verifyWith(key)
@@ -69,6 +71,7 @@ public class JwtUtil {
 
             return jws.getBody().getSubject();
         } catch (JwtException e) {
+            // Login fails we return null and a log warning
             logger.warn("Failed to get username from JWT: {}", e.getMessage());
             return null;
         }

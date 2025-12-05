@@ -3,8 +3,6 @@ package com.sti.steven.trophies.controller;
 import com.sti.steven.trophies.game.Game;
 import com.sti.steven.trophies.service.GameService;
 import com.sti.steven.trophies.service.UserService;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController

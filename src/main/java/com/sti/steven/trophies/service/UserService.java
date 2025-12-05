@@ -54,15 +54,12 @@ public class UserService {
         user.setEmail(dto.getEmail());
 
         Optional<Role> userRole = roleRepository.findByRoleName("USER");
-
         if(userRole.isEmpty()) {
             throw new IllegalArgumentException("Role does not exist.");
         }
-
         user.getRoles().add(userRole.get());
         return userRepository.save(user);
     }
-
 
     @Transactional
     public User deleteUser(Integer id) {
@@ -72,7 +69,6 @@ public class UserService {
 
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + id));
-
         userRepository.delete(user);
         return user;
     }
@@ -132,7 +128,7 @@ public class UserService {
         return roleRepository.findByRoleName(roleName);
     }
 
-    // Intended as a Microservice - let me know if it does not qualify!
+    // Intended as a Microservice
     public String verify(String username) {
         User dbUser = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
