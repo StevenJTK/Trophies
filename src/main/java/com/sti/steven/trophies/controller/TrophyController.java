@@ -41,6 +41,8 @@ public class TrophyController {
 
     @GetMapping("/name/{gameName}/trophies")
     public List<Trophy> findAllByGameName(@PathVariable String gameName) {
-        return trophyService.findAllByGame_GameName(gameName);
+        List<Trophy> trophies = trophyService.findAllByGame_GameName(gameName);
+        System.out.println("Looking up trophies for game: [" + gameName + "]");
+        return trophies;
     }
 }

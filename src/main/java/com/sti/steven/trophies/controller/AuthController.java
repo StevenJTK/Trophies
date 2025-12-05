@@ -51,9 +51,59 @@ public class AuthController {
         this.roleRepository = roleRepository1;
     }
 
+    @PostMapping("/login")
+    public ResponseEntity<?> authenticateUser(@RequestBody(required = false) UserDTO dto) {
+        if (dto == null || dto.getUsername() == null || dto.getPassword() == null) {
+            return ResponseEntity.badRequest().body("User data is missing.");
+        }
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(dto.getUsername(), dto.getPassword())
+        );
+
+        User user = userService.findByUsername(dto.getUsername()).orElseThrow(() -> new IllegalStateException("User not found."));
+
+        String token = jwtService.generateToken(user);
+        Map<String, Object> responseBody = new HashMap<>();
+        responseBody.put("username", user.getUsername());
+        responseBody.put("email", user.getEmail());
+        responseBody.put("token", token);
+
+        return ResponseEntity.ok(responseBody);
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<?> registerUser(@RequestBody UserDTO dto) {
+        if(dto == null || dto.getUsername() == null || dto.getPassword() == null) {
+            return ResponseEntity.badRequest().body("Fields are missing.");
+        }
+
+        if (userService.usernameExists(dto.getUsername()) || userService.emailExists(dto.getEmail())){
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Username or email already exists.");
+        }
+
+        User registerUser = userService.createNewUser(dto);
+
+        String token = jwtService.generateToken(registerUser);
+
+        if(token == null) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to generate token.");
+        }
+
+        if(registerUser == null) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("User creation failed.");
+        }
+
+        Map<String, Object> responseBody = new HashMap<>();
+        responseBody.put("username", registerUser.getUsername());
+        responseBody.put("email", registerUser.getEmail());
+        responseBody.put("token", token);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseBody);
+    }
+
     @PostMapping("logout")
     public ResponseEntity<?> logoutUser(@RequestHeader("Authorization") String authHeader) {
-        if(authHeader == null || !authHeader.startsWith("Bearer ")) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             return ResponseEntity.badRequest().body("Invalid token");
         }
         String token = authHeader.substring(7);
@@ -62,33 +112,4 @@ public class AuthController {
     }
 
 
-  /*  @PutMapping("/admin/{id}/roles")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> registerAdmin(@PathVariable Integer id, @RequestBody Set<String> roleNames) {
-        User user = userRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found."));
-
-        Set<Role> roles = roleNames.stream()
-                .map(roleName -> roleRepository.findByRoleName(roleName).orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.BAD_REQUEST, "Role" + roleName + " does not exist")))
-                .collect(Collectors.toSet());
-
-        user.getRoles().clear();
-        user.getRoles().addAll(roles);
-
-        userRepository.save(user);
-        return ResponseEntity.ok("Admin role has been provided.");
-    }
-
-    @GetMapping("/admin/pending")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> findPendingUsers() {
-        return ResponseEntity.ok(userService.getPendingUsers());
-    }
-
-    @PostMapping("/verify/{username}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<String> verifyUser(@PathVariable String username) {
-        String result = userService.verify(username);
-        return ResponseEntity.ok(result);
-    } */
 }
