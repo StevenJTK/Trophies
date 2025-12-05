@@ -3,9 +3,7 @@ package com.sti.steven.trophies.controller;
 import com.sti.steven.trophies.dto.UserDTO;
 import com.sti.steven.trophies.interfaces.RoleRepository;
 import com.sti.steven.trophies.interfaces.UserRepository;
-import com.sti.steven.trophies.product.Role;
 import com.sti.steven.trophies.product.User;
-import com.sti.steven.trophies.security.jwt.JwtAuthenticationFilter;
 import com.sti.steven.trophies.service.JwtService;
 import com.sti.steven.trophies.service.UserService;
 import jakarta.servlet.http.Cookie;
@@ -16,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Controller;
@@ -53,7 +50,7 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@RequestBody(required = false) UserDTO dto, HttpServletResponse response) {
         if (dto == null || dto.getUsername() == null || dto.getPassword() == null) {
-            return ResponseEntity.badRequest().body("User data is missing.");
+            return ResponseEntity.badRequest().body("Required fields missing. Please try again.");
         }
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(dto.getUsername(), dto.getPassword())
@@ -64,14 +61,17 @@ public class AuthController {
 
         String token = jwtService.generateToken(user);
 
+        // HTTP Cookies to allow the use of CSRF without security concerns
         Cookie cookie = new Cookie("JWT_TOKEN", token);
         cookie.setHttpOnly(true);
         cookie.setSecure(true);
         cookie.setPath("/");
-        cookie.setMaxAge(24 * 60 * 60);
+        cookie.setMaxAge(24 * 60 * 60); // 1 day
 
         response.addCookie(cookie);
 
+        // Fetch the user's details
+        // No password as this would be a breach in security
         Map<String, Object> responseBody = new HashMap<>();
         responseBody.put("username", user.getUsername());
         responseBody.put("email", user.getEmail());
