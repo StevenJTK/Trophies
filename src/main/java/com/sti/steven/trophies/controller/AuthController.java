@@ -13,7 +13,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -22,12 +22,10 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import com.sti.steven.trophies.security.jwt.JwtUtil;
-import org.springframework.web.server.ResponseStatusException;
+
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/auth")
@@ -38,6 +36,7 @@ public class AuthController {
     private final UserService userService;
     private final AuthenticationManager authenticationManager;
     private final RoleRepository roleRepository;
+    private final static Logger logger = LoggerFactory.getLogger(AuthController.class);
 
     @Autowired
     private JwtUtil jwtUtil;
@@ -52,7 +51,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> authenticateUser(@RequestBody(required = false) UserDTO dto) {
+    public ResponseEntity<?> authenticateUser(@RequestBody(required = false) UserDTO dto, HttpServletResponse response) {
         if (dto == null || dto.getUsername() == null || dto.getPassword() == null) {
             return ResponseEntity.badRequest().body("User data is missing.");
         }
@@ -61,12 +60,21 @@ public class AuthController {
         );
 
         User user = userService.findByUsername(dto.getUsername()).orElseThrow(() -> new IllegalStateException("User not found."));
+        logger.info("User '{}' found.", user.getUsername());
 
         String token = jwtService.generateToken(user);
+
+        Cookie cookie = new Cookie("JWT_TOKEN", token);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
+        cookie.setPath("/");
+        cookie.setMaxAge(24 * 60 * 60);
+
+        response.addCookie(cookie);
+
         Map<String, Object> responseBody = new HashMap<>();
         responseBody.put("username", user.getUsername());
         responseBody.put("email", user.getEmail());
-        responseBody.put("token", token);
 
         return ResponseEntity.ok(responseBody);
     }
@@ -86,10 +94,13 @@ public class AuthController {
         String token = jwtService.generateToken(registerUser);
 
         if(token == null) {
+            logger.info("Token was not generated.");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to generate token.");
+
         }
 
         if(registerUser == null) {
+            logger.info("Could not create new user.");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("User creation failed.");
         }
 
@@ -101,7 +112,7 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.CREATED).body(responseBody);
     }
 
-    @PostMapping("logout")
+    @PostMapping("/logout")
     public ResponseEntity<?> logoutUser(@RequestHeader("Authorization") String authHeader) {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             return ResponseEntity.badRequest().body("Invalid token");
@@ -110,6 +121,4 @@ public class AuthController {
         return ResponseEntity.ok("Logged out.");
 
     }
-
-
 }

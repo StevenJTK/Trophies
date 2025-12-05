@@ -132,6 +132,7 @@ public class UserService {
         return roleRepository.findByRoleName(roleName);
     }
 
+    // Intended as a Microservice - let me know if it does not qualify!
     public String verify(String username) {
         User dbUser = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));

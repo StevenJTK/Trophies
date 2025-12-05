@@ -5,8 +5,11 @@ import com.sti.steven.trophies.interfaces.RoleRepository;
 import com.sti.steven.trophies.interfaces.UserRepository;
 import com.sti.steven.trophies.product.Role;
 import com.sti.steven.trophies.product.User;
+import com.sti.steven.trophies.security.jwt.JwtAuthenticationFilter;
 import com.sti.steven.trophies.service.JwtService;
 import com.sti.steven.trophies.service.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -27,6 +30,7 @@ public class AdminController {
     private final UserService userService;
     private final AuthenticationManager authenticationManager;
     private final RoleRepository roleRepository;
+    private static final Logger logger = LoggerFactory.getLogger(AdminController.class);
 
     public AdminController(UserRepository userRepository, JwtService jwtService, UserService userService, AuthenticationManager authenticationManager, RoleRepository roleRepository) {
         this.userRepository = userRepository;
@@ -50,6 +54,7 @@ public class AdminController {
         user.getRoles().addAll(roles);
 
         userRepository.save(user);
+        logger.info("This user's role '{}' (ID {}) is updated to: {}", user.getUsername(), id, roleNames);
         return ResponseEntity.ok("Admin role has been provided.");
     }
 
