@@ -10,8 +10,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import com.sti.steven.trophies.product.Role;
-import com.sti.steven.trophies.product.User;
+import com.sti.steven.trophies.entity.Role;
+import com.sti.steven.trophies.entity.User;
 import com.sti.steven.trophies.interfaces.UserRepository;
 
 import java.util.List;

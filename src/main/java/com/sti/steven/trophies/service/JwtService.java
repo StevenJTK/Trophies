@@ -1,6 +1,6 @@
 package com.sti.steven.trophies.service;
 
-import com.sti.steven.trophies.product.User;
+import com.sti.steven.trophies.entity.User;
 import com.sti.steven.trophies.security.jwt.JwtUtil;
 import org.springframework.stereotype.Service;
 

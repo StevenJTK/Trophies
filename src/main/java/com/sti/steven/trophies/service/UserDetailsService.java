@@ -1,7 +1,7 @@
 package com.sti.steven.trophies.service;
 
 import com.sti.steven.trophies.interfaces.UserRepository;
-import com.sti.steven.trophies.product.User;
+import com.sti.steven.trophies.entity.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;

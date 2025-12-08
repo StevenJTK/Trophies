@@ -1,8 +1,8 @@
 package com.sti.steven.trophies.security.jwt;
 
-import com.sti.steven.trophies.product.Role;
-import com.sti.steven.trophies.product.Roles;
-import com.sti.steven.trophies.product.User;
+import com.sti.steven.trophies.entity.Role;
+import com.sti.steven.trophies.entity.Roles;
+import com.sti.steven.trophies.entity.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;

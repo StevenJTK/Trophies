@@ -1,4 +1,4 @@
-package com.sti.steven.trophies.product;
+package com.sti.steven.trophies.entity;
 
 import com.sti.steven.trophies.game.Trophy;
 import jakarta.persistence.*;

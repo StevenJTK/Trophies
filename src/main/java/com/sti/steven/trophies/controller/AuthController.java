@@ -3,7 +3,7 @@ package com.sti.steven.trophies.controller;
 import com.sti.steven.trophies.dto.UserDTO;
 import com.sti.steven.trophies.interfaces.RoleRepository;
 import com.sti.steven.trophies.interfaces.UserRepository;
-import com.sti.steven.trophies.product.User;
+import com.sti.steven.trophies.entity.User;
 import com.sti.steven.trophies.service.JwtService;
 import com.sti.steven.trophies.service.UserService;
 import jakarta.servlet.http.Cookie;

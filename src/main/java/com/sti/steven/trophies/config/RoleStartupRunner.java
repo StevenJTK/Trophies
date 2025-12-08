@@ -1,8 +1,8 @@
 package com.sti.steven.trophies.config;
 
 import com.sti.steven.trophies.interfaces.RoleRepository;
-import com.sti.steven.trophies.product.Role;
-import com.sti.steven.trophies.product.Roles;
+import com.sti.steven.trophies.entity.Role;
+import com.sti.steven.trophies.entity.Roles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;

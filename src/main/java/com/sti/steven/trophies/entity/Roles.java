@@ -1,4 +1,4 @@
-package com.sti.steven.trophies.product;
+package com.sti.steven.trophies.entity;
 
 public enum Roles {
     ADMIN("ADMIN:CAN_POST"),

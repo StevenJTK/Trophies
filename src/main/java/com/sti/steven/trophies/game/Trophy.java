@@ -2,7 +2,7 @@ package com.sti.steven.trophies.game;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
-import com.sti.steven.trophies.product.User;
+import com.sti.steven.trophies.entity.User;
 
 import java.util.HashSet;
 import java.util.Set;

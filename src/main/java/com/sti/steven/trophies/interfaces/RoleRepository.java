@@ -2,7 +2,7 @@ package com.sti.steven.trophies.interfaces;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import com.sti.steven.trophies.product.Role;
+import com.sti.steven.trophies.entity.Role;
 
 import java.util.Optional;
 
